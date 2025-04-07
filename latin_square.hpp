@@ -141,24 +141,24 @@ public:
         return points;
     }
 
-    std::vector<Point3> strongProperPositions() const {
-        std::vector<Point3> points;
-        for (int i = 0; i < N; ++i) {
-            for (int j = 0; j < N; ++j) {
-                for (int k = 0; k < N; ++k) {
-                    bool stronglyProper = 
-                            this->atCube(i, j, k) == 0
-                        and this->valueInLine(-1, -1, j, k).empty()
-                        and this->valueInLine(-1, i, -1, k).empty()
-                        and this->valueInLine(-1, i, j, -1).empty();
-                    if (stronglyProper) {
-                        points.push_back(Point3(i, j, k));
-                    }
-                }
-            }
-        }
-        return points;
-    }
+    // std::vector<Point3> strongProperPositions() const {
+    //     std::vector<Point3> points;
+    //     for (int i = 0; i < N; ++i) {
+    //         for (int j = 0; j < N; ++j) {
+    //             for (int k = 0; k < N; ++k) {
+    //                 bool stronglyProper = 
+    //                         this->atCube(i, j, k) == 0;
+    //                     // and this->valueInLine(-1, -1, j, k).empty()
+    //                     // and this->valueInLine(-1, i, -1, k).empty()
+    //                     // and this->valueInLine(-1, i, j, -1).empty();
+    //                 if (stronglyProper) {
+    //                     points.push_back(Point3(i, j, k));
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return points;
+    // }
 
     std::vector<Point3> improper() const {
         return this->positionsWithValue(-1);
@@ -331,7 +331,7 @@ template<int N, int K>
 bool isValidPlusMinusMove(LatinSquareAsCube<N, K>& lsc, Point3 pos1, Point3 pos2) {
     applyPlusMinusMove(lsc, pos1, pos2, +1);
 
-    bool ok = lsc.negativeCnt < K
+    bool ok = lsc.negativeCnt <= K
             and inRange(-1, lsc.atCube(pos1.x, pos1.y, pos1.z), 1)
             and inRange(-1, lsc.atCube(pos1.x, pos1.y, pos2.z), 1)
             and inRange(-1, lsc.atCube(pos1.x, pos2.y, pos1.z), 1)
@@ -372,7 +372,7 @@ void makeJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc) {
     // TODO use K!!!
     std::vector<Point3> initial_points = lsc.positionsWithValue(-1);
     if (lsc.negativeCnt < K) {
-        initial_points = mergeVectors(initial_points, lsc.strongProperPositions());
+        initial_points = mergeVectors(initial_points, lsc.positionsWithValue(0));
     }
     std::vector<std::pair<Point3,Point3>> candidates;
     for (const Point3& p : initial_points) {
@@ -390,7 +390,7 @@ void makeJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc) {
     // std::cout << std::endl; lsc.debugPrint();
     if (candidates.empty()) {
         // lsc.debugPrint();
-        std::cout << "$# " << (lsc.negativeCnt < K) << " " 
+        std::cout << "$# " << lsc.negativeCnt << " " << (lsc.negativeCnt < K) << " " 
             << initial_points.size() << std::endl;
     }
     assert(not candidates.empty());
@@ -408,7 +408,7 @@ void makeGeneralMove(LatinSquareAsCube<N, K>& lsc) {
     // TODO use K!!!
     std::vector<Point3> initial_points = lsc.positionsWithValue(-1);
     if (lsc.negativeCnt < K) {
-        initial_points = mergeVectors(initial_points, lsc.strongProperPositions());
+        initial_points = mergeVectors(initial_points, lsc.positionsWithValue(0));
     }
     std::vector<std::pair<Point3,Point3>> candidates;
     for (const Point3& p : initial_points) {
