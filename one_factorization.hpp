@@ -6,11 +6,6 @@
 template<int N, int K>
 class OneFactorizationAsCube : public LatinSquareAsCube<N, K> {
 public:
-    // OneFactorizationAsCube() {
-    //     this->fromLatinSquare(LatinSquare<N>::symmetricLatinSquare());
-    //     this->negativeCnt = 0;
-    // }
-
     OneFactorizationAsCube(const LatinSquare<N>& ls) : LatinSquareAsCube<N, K>(ls) {
         assert(OneFactorizationAsCube::symmetric(ls));
     }
@@ -108,8 +103,6 @@ bool isValidSymmetricJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc, Point3 p
 
 template<int N, int K>
 void makeSymmetricJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc) {
-    // TODO use K!!!
-    // std::cout << "HOLAAA " << std::endl;
     std::vector<Point3> initial_positions = lsc.positionsWithValue(-1);
     if (lsc.negativeCnt < K - 1) {
         initial_positions = mergeVectors(initial_positions, lsc.positionsWithValue(0));
@@ -128,10 +121,6 @@ void makeSymmetricJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc) {
                 }
             }
         }
-    }
-    if (candidates.empty()) {
-        std::cout << "$ " << std::endl;
-        assert(false);
     }
     auto [pos1, pos2] = sampleUniformly(candidates);
     applySymmetricJacobsonMatthewsMove(lsc, pos1, pos2, +1);

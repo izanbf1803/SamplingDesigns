@@ -54,7 +54,8 @@ std::ostream& operator<<(std::ostream& os, const Point3& p) {
 }
 
 
-template<int N> // N: dimension of the latin square
+// N: dimension of the latin square
+template<int N>
 class LatinSquare {
 public:
     std::array<std::array<int, N>, N> table;
@@ -70,38 +71,15 @@ public:
         }
         return ls;
     }
-
-    // static LatinSquare<N> symmetricLatinSquare() {
-    //     LatinSquare<N> ls;
-    //     // for (int i = 0; i < N; ++i) {
-    //     //     ls.table[i][i] = N - 1;
-    //     //     for (int j = 0; j < i; ++j) {
-    //     //         ls.table[j][i] = ls.table[i][j] = (i + j) % (N - 1);
-    //     //     }
-    //     // }
-    //     for (int i = 0; i < N; ++i) {
-    //         ls.table[i][i] = N - 1;
-    //         for (int j = i+1; j < N; ++j) {
-    //             int val = (i + j) % (N - 1);
-    //             ls.table[j][i] = ls.table[i][j] = val;
-    //         }
-    //     }
-    //     return ls;
-    // }
 };
 
 
-template<int N, int K> // N denotes the size, K the maximum number of improper positions
+// N denotes the size, K the maximum number of improper positions. Jacobosn-Matthews is K=1.
+template<int N, int K> 
 class LatinSquareAsCube {
 public:
     std::array<std::array<std::array<int, N>, N>, N> cubeArray;
     int negativeCnt;
-
-    // LatinSquareAsCube() {
-    //     fromLatinSquare(LatinSquare<N>::cyclicLatinSquare());
-    //     this->negativeCnt = 0;
-    //     std::cout << "WHAAT" << std::endl;
-    // }
 
     LatinSquareAsCube(const LatinSquare<N>& ls) {
         fromLatinSquare(ls);
@@ -140,25 +118,6 @@ public:
         }
         return points;
     }
-
-    // std::vector<Point3> strongProperPositions() const {
-    //     std::vector<Point3> points;
-    //     for (int i = 0; i < N; ++i) {
-    //         for (int j = 0; j < N; ++j) {
-    //             for (int k = 0; k < N; ++k) {
-    //                 bool stronglyProper = 
-    //                         this->atCube(i, j, k) == 0;
-    //                     // and this->valueInLine(-1, -1, j, k).empty()
-    //                     // and this->valueInLine(-1, i, -1, k).empty()
-    //                     // and this->valueInLine(-1, i, j, -1).empty();
-    //                 if (stronglyProper) {
-    //                     points.push_back(Point3(i, j, k));
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return points;
-    // }
 
     std::vector<Point3> improper() const {
         return this->positionsWithValue(-1);
@@ -387,12 +346,7 @@ void makeJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc) {
             }
         }
     }
-    // std::cout << std::endl; lsc.debugPrint();
-    if (candidates.empty()) {
-        // lsc.debugPrint();
-        std::cout << "$# " << lsc.negativeCnt << " " << (lsc.negativeCnt < K) << " " 
-            << initial_points.size() << std::endl;
-    }
+
     assert(not candidates.empty());
     auto [pos1, pos2] = sampleUniformly(candidates);
     applyJacobsonMatthewsMove(lsc, pos1, pos2);
@@ -405,7 +359,6 @@ void makeJacobsonMatthewsMove(LatinSquareAsCube<N, K>& lsc) {
 
 template<int N, int K>
 void makeGeneralMove(LatinSquareAsCube<N, K>& lsc) {
-    // TODO use K!!!
     std::vector<Point3> initial_points = lsc.positionsWithValue(-1);
     if (lsc.negativeCnt < K) {
         initial_points = mergeVectors(initial_points, lsc.positionsWithValue(0));
@@ -423,12 +376,7 @@ void makeGeneralMove(LatinSquareAsCube<N, K>& lsc) {
             }
         }
     }
-    // std::cout << std::endl; lsc.debugPrint();
-    if (candidates.empty()) {
-        // lsc.debugPrint();
-        std::cout << "$# " << (lsc.negativeCnt < K) << " " 
-            << initial_points.size() << std::endl;
-    }
+
     assert(not candidates.empty());
     auto [pos1, pos2] = sampleUniformly(candidates);
     applyJacobsonMatthewsMove(lsc, pos1, pos2);
